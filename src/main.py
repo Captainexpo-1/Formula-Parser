@@ -2,7 +2,8 @@ from parse import *
 from lexer import lex
 from formula import Formula
 def main():
-    v = input("Enter k:v, k:v, ... pairs for vars\n")
+    #v = input("Enter k:v, k:v, ... pairs for vars\n")
+    v = ""
     vars = {}
     if v != "":
         for pair in v.split(","):

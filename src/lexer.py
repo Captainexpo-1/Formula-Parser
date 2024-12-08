@@ -58,21 +58,13 @@ token_specification = [(i[0], re.compile(i[1])) for i in [
     (TokenType.MINUS,    r'-'),            # Subtraction operator
     (TokenType.COMMA,    r','),            # Comma
     (TokenType.DOT,      r'\.'),           # Dot
-    (TokenType.LT,       r'<'),            # Less than
-    (TokenType.GT,       r'>'),            # Greater than
     (TokenType.LE,       r'<='),           # Less than or equal to
     (TokenType.GE,       r'>='),           # Greater than or equal to
     (TokenType.EQ,       r'='),           # Equal to
     (TokenType.NE,       r'!='),           # Not equal to
-    (TokenType.AMPERSAND,r'&'),            # String concatenation
-    (TokenType.AND,      r'AND'),          # Logical AND
-    (TokenType.OR,       r'OR'),           # Logical OR
-    (TokenType.NOT,      r'NOT'),          # Logical NOT
-    (TokenType.IF,       r'IF'),           # IF keyword
-    (TokenType.ELSE,     r'ELSE'),         # ELSE keyword
-    (TokenType.TRUE,     r'TRUE'),         # TRUE keyword
-    (TokenType.FALSE,    r'FALSE'),        # FALSE keyword
-    (TokenType.NULL,     r'NULL'),         # NULL keyword
+    (TokenType.LT,       r'<'),            # Less than
+    (TokenType.GT,       r'>'),            # Greater than
+    (TokenType.AMPERSAND,r'&'),            # String concatenations
     (TokenType.ID,       r'[A-Za-z_]\w*'), # Identifiers
     (TokenType.STRING,   r'"(?:\\.|[^"\\])*"'),  # String literals
     (TokenType.MISMATCH, r'.'),            # Any other character
@@ -119,4 +111,4 @@ def lex(code):
 if __name__ == '__main__':
     code = '''MIN({Regular Price}, {Sale Price})''' # EX airtable formula
     for token in lex(code):
-        print(token)
+        print(token)    
