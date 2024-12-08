@@ -88,6 +88,8 @@ def lex(code):
             pos += 1
             inner = ""
             while code[pos] != '}':
+                if code[pos] == "\\":
+                    pos += 1
                 inner += code[pos]
                 pos += 1
             tokens.append(Token(TokenType.VARIABLE_NAME, inner))
