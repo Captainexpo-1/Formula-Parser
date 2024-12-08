@@ -1,5 +1,7 @@
 import re
 from enum import Enum, auto
+from typing import List, Tuple, Pattern, Union
+
 class TokenType(Enum):
     SKIP = auto()
     NUMBER = auto()
@@ -40,7 +42,7 @@ class TokenType(Enum):
     RBRACK = auto()
 
 # Define token specifications
-token_specification = [(i[0], re.compile(i[1])) for i in [
+token_specification: List[Tuple[TokenType, Pattern[str]]] = [(i[0], re.compile(i[1])) for i in [
     (TokenType.SKIP,     r'[ \t\n]+'),       # Skip over spaces, newlines, and tabs
     (TokenType.NUMBER,   r'((\d+)\.\d+)(?!\w)'),  # Integer or decimal number
     (TokenType.NUMBER,   r'\d+(?!\w)'),        # Decimal number without leading digit
@@ -68,22 +70,23 @@ token_specification = [(i[0], re.compile(i[1])) for i in [
     (TokenType.MISMATCH, r'.'),            # Any other character
 ]]
 
-
 class Token:
-    def __init__(self, kind, value):
+    def __init__(self, kind: TokenType, value: str) -> None:
         self.kind = kind
         self.value = value
-    def __str__(self):
+
+    def __str__(self) -> str:
         return f"{self.kind}: {self.value}"
-    def __repr__(self): 
+
+    def __repr__(self) -> str:
         return str(self)
 
 # Lexer function
-def lex(code):
+def lex(code: str) -> List[Token]:
     pos = 0
-    tokens = []
+    tokens: List[Token] = []
     while pos < len(code):
-        match = None
+        match: Union[re.Match[str], None] = None
         if code[pos] == '{':
             pos += 1
             inner = ""
@@ -111,4 +114,4 @@ def lex(code):
 if __name__ == '__main__':
     code = '''MIN({Regular Price}, {Sale Price})''' # EX airtable formula
     for token in lex(code):
-        print(token)    
+        print(token)
