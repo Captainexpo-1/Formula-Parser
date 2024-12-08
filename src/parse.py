@@ -109,6 +109,10 @@ class Parser:
         self.pos = 0
         if not self.tokens:
             return None
+        
+        if (token := self.current_token().kind) != TokenType.EOF:
+            raise Exception(f"parser didn't consume all tokens, found {token}")
+        
         return self.expression()
 
     def expression(self, precedence: int = 0) -> ASTNode:
