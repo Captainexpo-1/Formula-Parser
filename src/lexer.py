@@ -43,31 +43,31 @@ class TokenType(Enum):
 
 # Define token specifications
 token_specification: List[Tuple[TokenType, Pattern[str]]] = [(i[0], re.compile(i[1])) for i in [
-    (TokenType.SKIP,     r'[ \t\n]+'),       # Skip over spaces, newlines, and tabs
-    (TokenType.NUMBER,   r'((\d+)\.\d+)(?!\w)'),  # Integer or decimal number
-    (TokenType.NUMBER,   r'\d+(?!\w)'),        # Decimal number without leading digit
-    (TokenType.LPAREN,   r'\('),           # Left parenthesis
-    (TokenType.RPAREN,   r'\)'),           # Right parenthesis
-    (TokenType.LBRACE,   r'\{'),           # Left brace
-    (TokenType.RBRACE,   r'\}'),           # Right brace
-    (TokenType.LBRACK,   r'\['),           # Left brack
-    (TokenType.RBRACK,   r'\]'),           # Right brack
-    (TokenType.MUL,      r'\*'),           # Multiplication operator
-    (TokenType.DIV,      r'/'),            # Division operator
-    (TokenType.PLUS,     r'\+'),           # Addition operator
-    (TokenType.MINUS,    r'-'),            # Subtraction operator
-    (TokenType.COMMA,    r','),            # Comma
-    (TokenType.DOT,      r'\.'),           # Dot
-    (TokenType.LE,       r'<='),           # Less than or equal to
-    (TokenType.GE,       r'>='),           # Greater than or equal to
-    (TokenType.EQ,       r'='),           # Equal to
-    (TokenType.NE,       r'!='),           # Not equal to
-    (TokenType.LT,       r'<'),            # Less than
-    (TokenType.GT,       r'>'),            # Greater than
-    (TokenType.AMPERSAND,r'&'),            # String concatenations
-    (TokenType.ID,       r'[A-Za-z_]\w*'), # Identifiers
+    (TokenType.SKIP,     r'[ \t\n]+'),           # Skip over spaces, newlines, and tabs
+    (TokenType.NUMBER,   r'((\d+)\.\d+)(?!\w)'), # Integer or decimal number
+    (TokenType.NUMBER,   r'\d+(?!\w)'),          # Decimal number without leading digit
+    (TokenType.LPAREN,   r'\('),                 # Left parenthesis
+    (TokenType.RPAREN,   r'\)'),                 # Right parenthesis
+    (TokenType.LBRACE,   r'\{'),                 # Left brace
+    (TokenType.RBRACE,   r'\}'),                 # Right brace
+    (TokenType.LBRACK,   r'\['),                 # Left brack
+    (TokenType.RBRACK,   r'\]'),                 # Right brack
+    (TokenType.MUL,      r'\*'),                 # Multiplication operator
+    (TokenType.DIV,      r'/'),                  # Division operator
+    (TokenType.PLUS,     r'\+'),                 # Addition operator
+    (TokenType.MINUS,    r'-'),                  # Subtraction operator
+    (TokenType.COMMA,    r','),                  # Comma
+    (TokenType.DOT,      r'\.'),                 # Dot
+    (TokenType.LE,       r'<='),                 # Less than or equal to
+    (TokenType.GE,       r'>='),                 # Greater than or equal to
+    (TokenType.EQ,       r'='),                  # Equal to
+    (TokenType.NE,       r'!='),                 # Not equal to
+    (TokenType.LT,       r'<'),                  # Less than
+    (TokenType.GT,       r'>'),                  # Greater than
+    (TokenType.AMPERSAND,r'&'),                  # String concatenations
+    (TokenType.ID,       r'[A-Za-z_]\w*'),       # Identifiers
     (TokenType.STRING,   r'"(?:\\.|[^"\\])*"'),  # String literals
-    (TokenType.MISMATCH, r'.'),            # Any other character
+    (TokenType.MISMATCH, r'.'),                  # Any other character
 ]]
 
 class Token:
