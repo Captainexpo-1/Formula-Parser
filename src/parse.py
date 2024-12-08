@@ -75,6 +75,19 @@ class FunctionCall(ASTNode):
             arg.output(indent + 4)
         print(' ' * indent + ')')
 
+class Array(ASTNode):
+    def __init__(self, elements):
+        self.elements = elements
+
+    def __repr__(self):
+        return f'Array({self.elements})'
+    
+    def output(self, indent=0):
+        print(' ' * indent + 'Array(')
+        for element in self.elements:
+            element.output(indent + 4)
+        print(' ' * indent + ')')
+
 class Parser:
     def __init__(self):
         self.tokens = []
@@ -151,6 +164,20 @@ class Parser:
             self.eat(TokenType.RPAREN)
             return node
 
+        elif token.kind == TokenType.MINUS:
+            self.eat(TokenType.MINUS)
+            return UnOp('-', self.primary())
+
+        elif token.kind == TokenType.LBRACK:
+            self.eat(TokenType.LBRACK)
+            e = []
+            while self.current_token().kind != TokenType.RBRACK:
+                e.append(self.expression())
+                if self.current_token().kind == TokenType.COMMA:
+                    self.eat(TokenType.COMMA)
+            self.eat(TokenType.RBRACK)
+            return Array(e)
+    
         elif token.kind == TokenType.VARIABLE_NAME:
             name = token.value
             self.eat(TokenType.VARIABLE_NAME)

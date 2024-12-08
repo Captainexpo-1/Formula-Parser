@@ -33,20 +33,23 @@ class TokenType(Enum):
     ID = 30
     STRING = 31
     MISMATCH = 32
+    EOF = 33
     OF = 34
     VARIABLE_NAME = 35
     AMPERSAND = 36
-    EOF = 33
+    LBRACK = 37
+    RBRACK = 38
 
 # Define token specifications
 token_specification = [(i[0], re.compile(i[1])) for i in [
     (TokenType.SKIP,     r'[ \t\n]+'),       # Skip over spaces, newlines, and tabs
-    (TokenType.NUMBER,   r'\d+(\.\d*)?'),  # Integer or decimal number
-    (TokenType.ASSIGN,   r'='),            # Assignment operator
+    (TokenType.NUMBER,   r'\d+(\.\d*)? '),  # Integer or decimal number
     (TokenType.LPAREN,   r'\('),           # Left parenthesis
     (TokenType.RPAREN,   r'\)'),           # Right parenthesis
     (TokenType.LBRACE,   r'\{'),           # Left brace
     (TokenType.RBRACE,   r'\}'),           # Right brace
+    (TokenType.LBRACK,   r'\['),           # Left brack
+    (TokenType.RBRACK,   r'\]'),           # Right brack
     (TokenType.SEMICOLON, r';'),           # Statement terminator
     (TokenType.MUL,      r'\*'),           # Multiplication operator
     (TokenType.DIV,      r'/'),            # Division operator
@@ -58,7 +61,7 @@ token_specification = [(i[0], re.compile(i[1])) for i in [
     (TokenType.GT,       r'>'),            # Greater than
     (TokenType.LE,       r'<='),           # Less than or equal to
     (TokenType.GE,       r'>='),           # Greater than or equal to
-    (TokenType.EQ,       r'=='),           # Equal to
+    (TokenType.EQ,       r'='),           # Equal to
     (TokenType.NE,       r'!='),           # Not equal to
     (TokenType.AMPERSAND,r'&'),            # String concatenation
     (TokenType.AND,      r'AND'),          # Logical AND

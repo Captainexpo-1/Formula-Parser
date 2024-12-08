@@ -8,7 +8,6 @@ def reduce(l: list, func):
     for i in range(1, len(l)):
         result = func(result, l[i])
     return result
-
 def get_function_call(name: str, args: list[ASTNode], env) -> ASTNode:
     args = [evaluate(arg, env) for arg in args]
     match name:

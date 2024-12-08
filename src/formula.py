@@ -10,6 +10,7 @@ class Formula:
     
     def parse(self):
         tokens = lex(self.code)
+        print(tokens)
         return self.parser.parse(tokens)
     
     def evaluate(self, row: dict[str, any]) -> any:
