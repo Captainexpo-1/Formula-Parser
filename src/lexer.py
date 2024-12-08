@@ -43,7 +43,8 @@ class TokenType(Enum):
 # Define token specifications
 token_specification = [(i[0], re.compile(i[1])) for i in [
     (TokenType.SKIP,     r'[ \t\n]+'),       # Skip over spaces, newlines, and tabs
-    (TokenType.NUMBER,   r'/(\d*).(\d*)/g'),  # Integer or decimal number
+    (TokenType.NUMBER,   r'((\d+)\.\d+)(?!\w)'),  # Integer or decimal number
+    (TokenType.NUMBER,   r'\d+(?!\w)'),        # Decimal number without leading digit
     (TokenType.LPAREN,   r'\('),           # Left parenthesis
     (TokenType.RPAREN,   r'\)'),           # Right parenthesis
     (TokenType.LBRACE,   r'\{'),           # Left brace
@@ -107,8 +108,6 @@ def lex(code):
             if match:
                 text = match.group(0)
                 if token_kind != TokenType.SKIP:
-                    if token_kind != TokenType.MISMATCH:
-                        raise Exception(f"Invalid token {text}")
                     tokens.append(Token(token_kind, text))
                 break
         if not match:

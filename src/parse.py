@@ -1,115 +1,117 @@
 from lexer import Token, TokenType
+from typing import List, Union, Optional
 
 class ASTNode:
-    pass
+    def output(self, indent: int = 0) -> None:
+        pass
 
 class BinOp(ASTNode):
-    def __init__(self, left, op, right):
+    def __init__(self, left: ASTNode, op: TokenType, right: ASTNode) -> None:
         self.left = left
         self.op = op
         self.right = right
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'BinOp({self.left} {self.op} {self.right})'
     
-    def output(self, indent=0):
+    def output(self, indent: int = 0) -> None:
         print(' ' * indent + f'BinOp({self.op}')
         self.left.output(indent + 4)
         self.right.output(indent + 4)
         print(' ' * indent + ')')
 
 class UnOp(ASTNode):
-    def __init__(self, op, right):
+    def __init__(self, op: TokenType, right: ASTNode) -> None:
         self.op = op
         self.right = right
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'UnOp({self.op} {self.right})'
     
-    def output(self, indent=0):
+    def output(self, indent: int = 0) -> None:
         print(' ' * indent + f'UnOp({self.op}')
         self.right.output(indent + 4)
         print(' ' * indent + ')')
 
 class Number(ASTNode):
-    def __init__(self, value):
+    def __init__(self, value: Optional[float]) -> None:
         self.value = value
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"Number({self.value})"
     
-    def output(self, indent=0):
+    def output(self, indent: int = 0) -> None:
         print(' ' * indent + f"Number({self.value})")
 
 class String(ASTNode):
-    def __init__(self, value):
+    def __init__(self, value: str) -> None:
         self.value = value
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'String("{self.value}")'
     
-    def output(self, indent=0):
+    def output(self, indent: int = 0) -> None:
         print(' ' * indent + f'String("{self.value}")')
 
 class Variable(ASTNode):
-    def __init__(self, name):
+    def __init__(self, name: str) -> None:
         self.name = name
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'Variable("{self.name}")'
     
-    def output(self, indent=0):
+    def output(self, indent: int = 0) -> None:
         print(' ' * indent + f'Variable("{self.name}")')
 
 class FunctionCall(ASTNode):
-    def __init__(self, name, args):
+    def __init__(self, name: str, args: List[ASTNode]) -> None:
         self.name = name
         self.args = args
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'FunctionCall("{self.name}", {self.args})'
     
-    def output(self, indent=0):
+    def output(self, indent: int = 0) -> None:
         print(' ' * indent + f'FunctionCall("{self.name}"')
         for arg in self.args:
             arg.output(indent + 4)
         print(' ' * indent + ')')
 
 class Array(ASTNode):
-    def __init__(self, elements):
+    def __init__(self, elements: List[ASTNode]) -> None:
         self.elements = elements
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f'Array({self.elements})'
     
-    def output(self, indent=0):
+    def output(self, indent: int = 0) -> None:
         print(' ' * indent + 'Array(')
         for element in self.elements:
             element.output(indent + 4)
         print(' ' * indent + ')')
 
 class Parser:
-    def __init__(self):
-        self.tokens = []
-        self.pos = 0
+    def __init__(self) -> None:
+        self.tokens: List[Token] = []
+        self.pos: int = 0
 
-    def current_token(self):
+    def current_token(self) -> Token:
         return self.tokens[self.pos] if self.pos < len(self.tokens) else Token(TokenType.EOF, None)
 
-    def eat(self, token_type):
+    def eat(self, token_type: TokenType) -> None:
         if self.current_token().kind == token_type:
             self.pos += 1
         else:
             raise Exception(f"Unexpected token {self.current_token().kind}, expected {token_type}")
 
-    def parse(self, tokens):
+    def parse(self, tokens: List[Token]) -> Optional[ASTNode]:
         self.tokens = tokens
         self.pos = 0
         if not self.tokens:
             return None
         return self.expression()
 
-    def expression(self, precedence=0):
+    def expression(self, precedence: int = 0) -> ASTNode:
         left = self.primary()
         while True:
             token = self.current_token()
@@ -125,7 +127,7 @@ class Parser:
 
         return left
 
-    def primary(self):
+    def primary(self) -> ASTNode:
         token = self.current_token()
 
         if token.kind == TokenType.NUMBER:
@@ -186,10 +188,10 @@ class Parser:
         else:
             raise Exception(f"Unexpected token {token.kind}")
 
-    def peek(self):
+    def peek(self) -> TokenType:
         return self.tokens[self.pos + 1].kind if self.pos + 1 < len(self.tokens) else TokenType.EOF
 
-    def get_precedence(self, token_type):
+    def get_precedence(self, token_type: TokenType) -> int:
         precedences = {
             TokenType.PLUS: 10,
             TokenType.AMPERSAND: 10,
