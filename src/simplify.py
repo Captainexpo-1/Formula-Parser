@@ -2,7 +2,7 @@
 from lexer import Token, TokenType, lex
 from typing import List, Union, Optional
 
-from parse import ASTNode, BinOp, Number, String
+from parse import ASTNode, BinOp, UnOp, Number, String
 
 def get_literal(node: ASTNode) -> Union[int, float, str, None]:
     if isinstance(node, Number):
@@ -11,6 +11,18 @@ def get_literal(node: ASTNode) -> Union[int, float, str, None]:
         return node.value
     else:
         return None
+
+def simplify_unop(node: UnOp) -> ASTNode:
+    right = get_literal(node.right)
+    if right is None:
+        return node
+    try:
+        if node.op == TokenType.MINUS:
+            return Number(-right)
+        else:
+            raise Exception(f"Invalid operator {node.op}")
+    except:
+        return node
 
 def simplify_binop(node: BinOp) -> ASTNode:
     left = get_literal(node.left)

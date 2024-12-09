@@ -89,6 +89,8 @@ class Array(ASTNode):
             element.output(indent + 4)
         print(' ' * indent + ')')
 
+from simplify import simplify_binop, simplify_unop
+
 class Parser:
     def __init__(self) -> None:
         self.tokens: List[Token] = []
@@ -186,7 +188,9 @@ class Parser:
 
         elif token.kind == TokenType.MINUS:
             self.eat(TokenType.MINUS)
-            return UnOp(TokenType.MINUS, self.primary())
+            unop = UnOp(TokenType.MINUS, self.primary())
+            unop = simplify_unop(unop)
+            return unop
 
         elif token.kind == TokenType.LBRACK:
             self.eat(TokenType.LBRACK)
@@ -229,4 +233,3 @@ class Parser:
         }
         return precedences.get(token_type, 0)
     
-from eval import simplify_binop
