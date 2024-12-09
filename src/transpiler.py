@@ -21,12 +21,29 @@ class Transpiler:
         self.write(text + "\n", indent=indent,nl=nl)
 
     def transpile(self, node: ASTNode) -> str:
+        """Transpile an AST to SQL
+
+        Args:
+            node (ASTNode): The root node of the AST
+
+        Returns:
+            str: The transpiled SQL
+        """
         self.output = ""
         self.indent = 0
         self.visit(node, {})
         return self.output
 
     def visit(self, node: ASTNode, ctx: dict[any, any]) -> None:
+        """Transpile a node to SQL
+
+        Args:
+            node (ASTNode): The node to transpile
+            ctx (dict[any, any]): The context
+
+        Raises:
+            Exception: When the node is invalid
+        """
         if isinstance(node, BinOp):
             self.visit_binop(node, ctx)
         elif isinstance(node, UnOp):
@@ -45,6 +62,13 @@ class Transpiler:
             raise Exception(f"Invalid node {node}")
 
     def visit_binop(self, node: BinOp, ctx: dict[any, any]) -> None:
+        """Transpile a binary operation node to SQL
+        
+        Args:
+            node (BinOp): the binary operation node
+            ctx (dict[any, any]): the context
+        """
+        
         if node.op == TokenType.AMPERSAND:
             #print("AMPERSAND")
             self.write("CONCAT(")
@@ -88,15 +112,11 @@ class Transpiler:
         self.write(")")
                 
     def visit_function_call(self, node: FunctionCall, ctx: dict[any, any]) -> None:
-        """
-        LEN function: Use LENGTH instead of LEN.
-        FIND function: Use INSTR instead of FIND.
-        CONCATENATE function: Use CONCAT instead of CONCATENATE.
-        SUBSTITUTE function: Use REPLACE instead of SUBSTITUTE.
-        DATETIME_DIFF function: Use DATEDIFF instead of DATETIME_DIFF.
-        TODAY function: Use CURRENT_DATE instead of TODAY.
-        String concatenation: Use || for string concatenation instead of +.
-        Equality operator: Use = instead of ==.
+        """Transpile a function call node to SQL
+
+        Args:
+            node (FunctionCall): the function call node
+            ctx (dict[any, any]): the context
         """
         if node.name == "IF":
             # Transpile to SQL
