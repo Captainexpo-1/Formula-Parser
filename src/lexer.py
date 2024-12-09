@@ -66,8 +66,8 @@ token_specification: List[Tuple[TokenType, Pattern[str]]] = [(i[0], re.compile(i
     (TokenType.GT,       r'>'),                  # Greater than
     (TokenType.AMPERSAND,r'&'),                  # String concatenations
     (TokenType.ID,       r'[A-Za-z_]\w*'),       # Identifiers
-    (TokenType.STRING,   r'"(?:\\.|[^"\\])*"'),  # String literals
-    (TokenType.MISMATCH, r'.'),                  # Any other character
+    (TokenType.STRING,   r'"(?:\\.|[^"\\])*"'),  # String literals ("")
+    (TokenType.STRING,   r"'(?:\\.|[^'\\])*'"),  # String literals ('')
 ]]
 
 class Token:
@@ -76,7 +76,7 @@ class Token:
         self.value = value
 
     def __str__(self) -> str:
-        return f"{self.kind}: {self.value}"
+        return f"{self.kind}('{self.value}')"
 
     def __repr__(self) -> str:
         return str(self)
@@ -106,7 +106,7 @@ def lex(code: str) -> List[Token]:
                     tokens.append(Token(token_kind, text))
                 break
         if not match:
-            raise Exception(f"Invalid character at position {pos}")
+            raise Exception(f"Invalid character {code[pos]} at position {pos}")
         pos = match.end(0)
     return tokens
 

@@ -1,8 +1,15 @@
 from lexer import Token, TokenType
 from typing import List, Union, Optional
 class ASTNode:
+    def __init__(self) -> None:
+        pass
     def output(self, indent: int = 0) -> None:
         pass
+    def __repr__(self) -> str:
+        return "Node()"
+    def __str__(self) -> str:
+        return self.__repr__()
+    
 
 class BinOp(ASTNode):
     def __init__(self, left: ASTNode, op: TokenType, right: ASTNode) -> None:
