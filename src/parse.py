@@ -1,6 +1,5 @@
 from lexer import Token, TokenType
 from typing import List, Union, Optional
-
 class ASTNode:
     def output(self, indent: int = 0) -> None:
         pass
@@ -130,6 +129,7 @@ class Parser:
             self.eat(op)
             right = self.expression(token_precedence)
             left = BinOp(left, op, right)
+            left = evaluate_binop(left)
 
         return left
 
@@ -214,3 +214,5 @@ class Parser:
             TokenType.GE: 7,
         }
         return precedences.get(token_type, 0)
+    
+from eval import evaluate_binop

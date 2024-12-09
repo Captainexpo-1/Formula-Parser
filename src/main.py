@@ -13,8 +13,7 @@ def main():
     while True:
         try:
             code = input(">> ")
-            formula = Formula(code)
-            print(formula.ast)
+            formula = Formula(code, print_ast=True)
         except KeyboardInterrupt:
             exit(0)
 
