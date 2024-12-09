@@ -1,0 +1,28 @@
+IF(
+  AND(
+    LEN({Name}) > 5, 
+    OR(
+      FIND("VIP", {Tags}), 
+      {Priority} = "High"
+    )
+  ),
+  CONCATENATE(
+    "Customer: ", 
+    SUBSTITUTE({Name}, " ", ""), 
+    " - ", 
+    IF(
+      FIND("@", {Email}), 
+      SUBSTITUTE({Email}, "@", "[at]"), 
+      "No email"
+    )
+  ),
+  IF(
+    DATETIME_DIFF({Due Date}, TODAY(), "days") < 0,
+    "Overdue by " & ABS(DATETIME_DIFF({Due Date}, TODAY(), "days")) & " days",
+    IF(
+      {Assigned},
+      "Assigned to " & {Assigned},
+      "Unassigned task"
+    )
+  )
+)
