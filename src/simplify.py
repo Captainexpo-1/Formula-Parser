@@ -5,7 +5,6 @@ from typing import List, Union, Optional
 from parse import ASTNode, BinOp, Number, String
 
 def get_literal(node: ASTNode) -> Union[int, float, str, None]:
-
     if isinstance(node, Number):
         return node.value
     elif isinstance(node, String):
@@ -13,22 +12,27 @@ def get_literal(node: ASTNode) -> Union[int, float, str, None]:
     else:
         return None
 
-def evaluate_binop(node: BinOp) -> any:
+def simplify_binop(node: BinOp) -> ASTNode:
     left = get_literal(node.left)
     right = get_literal(node.right)
 
     if left is None or right is None:
         return node
     try:
-        match node.op:
-            case TokenType.PLUS:
-                if type(left) == str or type(right) == str:
-                    raise Exception("Cannot add strings")
-                return Number(left + right)
-            case TokenType.AMPERSAND:
-                if type(left) != str or type(right) != str:
-                    raise Exception("Cannot concatenate non-strings")
+        if node.op == TokenType.PLUS:
+            if isinstance(left, str) or isinstance(right, str):
+                raise Exception("Cannot add strings")
+            return Number(left + right)
+        elif node.op == TokenType.AMPERSAND:
+            if isinstance(left, str) and isinstance(right, str):
                 return String(left + right)
+            else:
+                raise Exception("Cannot concatenate non-strings")
+        
+        left = float(left)
+        right = float(right)
+            
+        match node.op:
             case TokenType.MINUS:
                 return Number(left - right)
             case TokenType.MUL:

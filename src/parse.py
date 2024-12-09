@@ -129,7 +129,7 @@ class Parser:
             self.eat(op)
             right = self.expression(token_precedence)
             left = BinOp(left, op, right)
-            left = evaluate_binop(left)
+            left = simplify_binop(left)
 
         return left
 
@@ -138,7 +138,10 @@ class Parser:
 
         if token.kind == TokenType.NUMBER:
             self.eat(TokenType.NUMBER)
-            return Number(float(token.value))
+            if token.value is not None:
+                return Number(float(token.value))
+            else:
+                raise ValueError("Token value is None and cannot be converted to float")
 
         elif token.kind == TokenType.ID:
             # Check if it's a function call
@@ -152,15 +155,24 @@ class Parser:
                     if self.current_token().kind == TokenType.COMMA:
                         self.eat(TokenType.COMMA)
                 self.eat(TokenType.RPAREN)
-                return FunctionCall(func_name, args)
+                if func_name is not None:
+                    return FunctionCall(func_name, args)
+                else:
+                    raise ValueError("Function name is None")
             else:
                 # Just a variable
                 var_name = token.value
                 self.eat(TokenType.ID)
-                return Variable(var_name)
+                if var_name is not None:
+                    return Variable(var_name)
+                else:
+                    raise ValueError("Variable name is None")
         elif token.kind == TokenType.STRING:
             self.eat(TokenType.STRING)
-            return String(token.value[1:-1])
+            if token.value is not None:
+                return String(token.value[1:-1])
+            else:
+                raise ValueError("Token value is None and cannot be converted to string")
         
         elif token.kind == TokenType.NULL:
             self.eat(TokenType.NULL)
@@ -174,7 +186,7 @@ class Parser:
 
         elif token.kind == TokenType.MINUS:
             self.eat(TokenType.MINUS)
-            return UnOp('-', self.primary())
+            return UnOp(TokenType.MINUS, self.primary())
 
         elif token.kind == TokenType.LBRACK:
             self.eat(TokenType.LBRACK)
@@ -189,8 +201,10 @@ class Parser:
         elif token.kind == TokenType.VARIABLE_NAME:
             name = token.value
             self.eat(TokenType.VARIABLE_NAME)
-            return Variable(name)
-
+            if name is not None:
+                return Variable(name)
+            else:
+                raise ValueError("Variable name is None")
         else:
             raise Exception(f"Unexpected token {token.kind}")
 
@@ -215,4 +229,4 @@ class Parser:
         }
         return precedences.get(token_type, 0)
     
-from eval import evaluate_binop
+from eval import simplify_binop

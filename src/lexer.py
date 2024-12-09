@@ -71,7 +71,7 @@ token_specification: List[Tuple[TokenType, Pattern[str]]] = [(i[0], re.compile(i
 ]]
 
 class Token:
-    def __init__(self, kind: TokenType, value: str) -> None:
+    def __init__(self, kind: TokenType, value: str|None) -> None:
         self.kind = kind
         self.value = value
 

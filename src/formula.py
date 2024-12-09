@@ -5,11 +5,12 @@ class Formula:
     def __init__(self, code: str, print_ast=False):
         self.code = code
         self.parser = Parser()
-        self.ast: ASTNode = self.parse()
-        if print_ast:
+        
+        self.ast: ASTNode|None = self.parse() 
+        if print_ast and self.ast is not None:
             self.ast.output()
     
-    def parse(self) -> Exception|ASTNode:
+    def parse(self) -> ASTNode|None:
         try: 
             tokens = lex(self.code)
             parsed = self.parser.parse(tokens)
