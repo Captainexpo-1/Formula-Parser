@@ -1,8 +1,0 @@
-{
-    "python.linting.enabled": true,
-    "python.linting.mypyEnabled": true,
-    "python.linting.pylintEnabled": false,
-    "python.analysis.typeCheckingMode": "basic",
-    "python.linting.lintOnSave": true
-}
-  
