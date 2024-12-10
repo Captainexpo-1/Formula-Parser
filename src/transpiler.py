@@ -20,7 +20,7 @@ class Transpiler:
     def writeln(self, text: str, indent=True,nl=False) -> None:
         self.write(text + "\n", indent=indent,nl=nl)
 
-    def transpile(self, node: ASTNode) -> str:
+    def transpile(self, node: ASTNode, table_name: str, result_name: str) -> str:
         """Transpile an AST to SQL
 
         Args:
@@ -29,9 +29,12 @@ class Transpiler:
         Returns:
             str: The transpiled SQL
         """
-        self.output = ""
-        self.indent = 0
+        self.writeln("SELECT")
+        self.indent += 1
         self.visit(node, {})
+        self.writeln(" AS result", indent=False)
+        self.indent -= 1
+        self.writeln(f"FROM {table_name};")
         return self.output
 
     def visit(self, node: ASTNode, ctx: dict[any, any]) -> None:
@@ -110,7 +113,7 @@ class Transpiler:
         self.write(f" {get_operator_equivalent(node.op)} ")
         self.visit(node.right, ctx)
         self.write(")")
-                
+    
     def visit_function_call(self, node: FunctionCall, ctx: dict[any, any]) -> None:
         """Transpile a function call node to SQL
 
@@ -118,6 +121,14 @@ class Transpiler:
             node (FunctionCall): the function call node
             ctx (dict[any, any]): the context
         """
+        def visit_chained_operator(args: list[ASTNode], operator: str):
+            self.write("(")
+            self.visit(args[0], ctx)
+            for i in range(1, len(args)):
+                self.write(f" {operator} ") 
+                self.visit(args[i], ctx)
+            self.write(")")
+    
         if node.name == "IF":
             # Transpile to SQL
             if not ctx.get("in_if", False):
@@ -144,18 +155,14 @@ class Transpiler:
             if not ctx.get("in_if", False):
                 self.indent -= 1
                 self.write("END",nl=True,indent=True)
+        elif node.name == "ADD":
+            visit_chained_operator(node.args, "+")
         elif node.name == "AND":
-            self.write("(")
-            self.visit(node.args[0], ctx)
-            self.write(" AND ") 
-            self.visit(node.args[1], ctx)
-            self.write(")")
+            visit_chained_operator(node.args, "AND")
         elif node.name == "OR":
-            self.write("(")
-            self.visit(node.args[0], ctx)
-            self.write(" OR ")
-            self.visit(node.args[1], ctx)
-            self.write(")")
+            visit_chained_operator(node.args, "OR")
+        elif node.name == "XOR":
+            visit_chained_operator(node.args, "XOR")
         elif node.name == "NOT":
             self.write("(")
             self.visit(node.args[0], ctx)

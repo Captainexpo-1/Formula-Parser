@@ -14,13 +14,13 @@ def main():
         if args[1] == "-f":
             inp: str = open(args[2], "r").read()
             formula = Formula(inp, print_ast=do_print_parse, print_tokens=do_print_tokens)
-            if do_transpile: print(transpiler.transpile(formula.ast))
+            if do_transpile: print(transpiler.transpile(formula.ast, "my_table", "result"))
             return
     while True:
         try:
             code = input(">> ")
             formula = Formula(code, print_ast=do_print_parse, print_tokens=do_print_tokens)
-            if do_transpile: print(transpiler.transpile(formula.ast))
+            if do_transpile: print(transpiler.transpile(formula.ast, "my_table", "result"))
         except KeyboardInterrupt:
             exit(0)
 
