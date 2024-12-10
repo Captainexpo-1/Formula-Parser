@@ -106,15 +106,37 @@ class Transpiler:
                     return "||"
                 case TokenType.DOT:
                     return "."
+                case TokenType.AND:
+                    return "AND"
+                case TokenType.OR:
+                    return "OR"
                 case _:
                     raise Exception(f"Invalid operator {operator}")
         self.write("(")
-        self.visit(node.left, ctx)
+        
+        if node.op in self.logical_ops and isinstance(node.left, Variable) and ctx.get("in_logic_exp", False):
+            self.write("(")
+            self.visit(node.left, ctx)
+            self.write(" IS NOT NULL)")
+        else:
+            self.visit(node.left, ctx)
         self.write(f" {get_operator_equivalent(node.op)} ")
-        self.visit(node.right, ctx)
+        
+        if node.op in self.logical_ops and isinstance(node.right, Variable) and ctx.get("in_logic_exp", False):
+            self.write("(")
+            self.visit(node.right, ctx)
+            self.write(" IS NOT NULL)")
+        else:
+            self.visit(node.right, ctx)
         self.write(")")
     
+    def create_chained_binop_node(self, args: list[ASTNode], operator: TokenType) -> BinOp:
+        if len(args) == 1:
+            return args[0]
+        return BinOp(args[0], operator, self.create_chained_binop_node(args[1:], operator))
+    
     def visit_function_call(self, node: FunctionCall, ctx: dict[any, any]) -> None:
+        ctx = ctx.copy()
         """Transpile a function call node to SQL
 
         Args:
@@ -128,7 +150,7 @@ class Transpiler:
                 self.write(f" {operator} ") 
                 self.visit(args[i], ctx)
             self.write(")")
-    
+            
         if node.name == "IF":
             # Transpile to SQL
             if not ctx.get("in_if", False):
@@ -137,8 +159,11 @@ class Transpiler:
                 self.write("WHEN ",nl=True,indent=True)
             else:
                 self.write("WHEN ",nl=True,indent=True)
+            
+            ctx["in_logic_exp"] = True
             self.visit(node.args[0], ctx)
-
+            del ctx["in_logic_exp"]
+            
             self.write(" THEN ",indent=False)
             self.indent += 1
             self.visit(node.args[1], ctx)
@@ -158,9 +183,11 @@ class Transpiler:
         elif node.name == "ADD":
             visit_chained_operator(node.args, "+")
         elif node.name == "AND":
-            visit_chained_operator(node.args, "AND")
+            ctx["in_logic_exp"] = True
+            self.visit(self.create_chained_binop_node(node.args, TokenType.AND), ctx)
         elif node.name == "OR":
-            visit_chained_operator(node.args, "OR")
+            ctx["in_logic_exp"] = True
+            self.visit(self.create_chained_binop_node(node.args, TokenType.OR), ctx)
         elif node.name == "XOR":
             visit_chained_operator(node.args, "XOR")
         elif node.name == "NOT":
@@ -209,6 +236,10 @@ class Transpiler:
             self.write(" < ")
             self.visit(node.args[1], ctx)
             self.write(")")
+        elif node.name == "IS_BLANK":
+            self.write("(")
+            self.visit(node.args[0], ctx)
+            self.write(" IS NULL)")
         else:
             self.write(f"{node.name}(")
             for i, arg in enumerate(node.args):
@@ -239,4 +270,5 @@ class Transpiler:
         self.write("]")
 
     def visit_variable(self, node: Variable, ctx: dict[any, any]) -> None:
-        self.write(node.name.replace(" ", "_"))
+        new_name = node.name.replace(" ", "_")
+        self.write(new_name)

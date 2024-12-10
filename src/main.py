@@ -10,12 +10,13 @@ def main():
     do_transpile = args.count("-t") > 0
     do_print_parse = args.count("--ast") > 0
     do_print_tokens = args.count("--tokens") > 0
-    if len(args) > 2:
-        if args[1] == "-f":
-            inp: str = open(args[2], "r").read()
-            formula = Formula(inp, print_ast=do_print_parse, print_tokens=do_print_tokens)
-            if do_transpile: print(transpiler.transpile(formula.ast, "my_table", "result"))
-            return
+    do_use_file = args.count("-f") > 0
+    f = None if not do_use_file else args[args.index("-f") + 1]
+    if do_use_file:
+        inp: str = open(f, "r").read()
+        formula = Formula(inp, print_ast=do_print_parse, print_tokens=do_print_tokens)
+        if do_transpile: print(transpiler.transpile(formula.ast, "my_table", "result"))
+        return
     while True:
         try:
             code = input(">> ")
